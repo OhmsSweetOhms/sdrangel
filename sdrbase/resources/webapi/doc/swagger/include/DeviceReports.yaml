@@ -25,6 +25,8 @@ DeviceReport:
       $ref: "/doc/swagger/include/BladeRF2.yaml#/BladeRF2MIMOReport"
     fileInputReport:
       $ref: "/doc/swagger/include/FileInput.yaml#/FileInputReport"
+    udmaBufInputReport:
+      $ref: "/doc/swagger/include/UdmaBufInput.yaml#/UdmaBufInputReport"
     kiwiSDRReport:
       $ref: "/doc/swagger/include/KiwiSDR.yaml#/KiwiSDRReport"
     limeSdrInputReport:

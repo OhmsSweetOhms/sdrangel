@@ -62,6 +62,8 @@ SWGDeviceSettings::SWGDeviceSettings() {
     m_fcd_pro_plus_settings_isSet = false;
     file_input_settings = nullptr;
     m_file_input_settings_isSet = false;
+    udma_buf_input_settings = nullptr;
+    m_udma_buf_input_settings_isSet = false;
     file_output_settings = nullptr;
     m_file_output_settings_isSet = false;
     hack_rf_input_settings = nullptr;
@@ -170,6 +172,8 @@ SWGDeviceSettings::init() {
     m_fcd_pro_plus_settings_isSet = false;
     file_input_settings = new SWGFileInputSettings();
     m_file_input_settings_isSet = false;
+    udma_buf_input_settings = new SWGUdmaBufInputSettings();
+    m_udma_buf_input_settings_isSet = false;
     file_output_settings = new SWGFileOutputSettings();
     m_file_output_settings_isSet = false;
     hack_rf_input_settings = new SWGHackRFInputSettings();
@@ -286,6 +290,9 @@ SWGDeviceSettings::cleanup() {
     }
     if(file_input_settings != nullptr) { 
         delete file_input_settings;
+    }
+    if(udma_buf_input_settings != nullptr) { 
+        delete udma_buf_input_settings;
     }
     if(file_output_settings != nullptr) { 
         delete file_output_settings;
@@ -433,6 +440,8 @@ SWGDeviceSettings::fromJsonObject(QJsonObject &pJson) {
     
     ::SWGSDRangel::setValue(&file_input_settings, pJson["fileInputSettings"], "SWGFileInputSettings", "SWGFileInputSettings");
     
+    ::SWGSDRangel::setValue(&udma_buf_input_settings, pJson["udmaBufInputSettings"], "SWGUdmaBufInputSettings", "SWGUdmaBufInputSettings");
+    
     ::SWGSDRangel::setValue(&file_output_settings, pJson["fileOutputSettings"], "SWGFileOutputSettings", "SWGFileOutputSettings");
     
     ::SWGSDRangel::setValue(&hack_rf_input_settings, pJson["hackRFInputSettings"], "SWGHackRFInputSettings", "SWGHackRFInputSettings");
@@ -565,6 +574,9 @@ SWGDeviceSettings::asJsonObject() {
     }
     if((file_input_settings != nullptr) && (file_input_settings->isSet())){
         toJsonValue(QString("fileInputSettings"), file_input_settings, obj, QString("SWGFileInputSettings"));
+    }
+    if((udma_buf_input_settings != nullptr) && (udma_buf_input_settings->isSet())){
+        toJsonValue(QString("udmaBufInputSettings"), udma_buf_input_settings, obj, QString("SWGUdmaBufInputSettings"));
     }
     if((file_output_settings != nullptr) && (file_output_settings->isSet())){
         toJsonValue(QString("fileOutputSettings"), file_output_settings, obj, QString("SWGFileOutputSettings"));
@@ -837,6 +849,16 @@ void
 SWGDeviceSettings::setFileInputSettings(SWGFileInputSettings* file_input_settings) {
     this->file_input_settings = file_input_settings;
     this->m_file_input_settings_isSet = true;
+}
+
+SWGUdmaBufInputSettings*
+SWGDeviceSettings::getUdmaBufInputSettings() {
+    return udma_buf_input_settings;
+}
+void
+SWGDeviceSettings::setUdmaBufInputSettings(SWGUdmaBufInputSettings* udma_buf_input_settings) {
+    this->udma_buf_input_settings = udma_buf_input_settings;
+    this->m_udma_buf_input_settings_isSet = true;
 }
 
 SWGFileOutputSettings*
@@ -1223,6 +1245,9 @@ SWGDeviceSettings::isSet(){
             isObjectUpdated = true; break;
         }
         if(file_input_settings && file_input_settings->isSet()){
+            isObjectUpdated = true; break;
+        }
+        if(udma_buf_input_settings && udma_buf_input_settings->isSet()){
             isObjectUpdated = true; break;
         }
         if(file_output_settings && file_output_settings->isSet()){

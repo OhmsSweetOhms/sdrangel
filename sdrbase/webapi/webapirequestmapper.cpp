@@ -5034,6 +5034,11 @@ bool WebAPIRequestMapper::getDeviceSettings(
             deviceSettings->setFileInputSettings(new SWGSDRangel::SWGFileInputSettings());
             deviceSettings->getFileInputSettings()->fromJsonObject(settingsJsonObject);
         }
+        else if (deviceSettingsKey == "udmaBufInputSettings")
+        {
+            deviceSettings->setUdmaBufInputSettings(new SWGSDRangel::SWGUdmaBufInputSettings());
+            deviceSettings->getUdmaBufInputSettings()->fromJsonObject(settingsJsonObject);
+        }
         else if (deviceSettingsKey == "fileOutputSettings")
         {
             deviceSettings->setFileOutputSettings(new SWGSDRangel::SWGFileOutputSettings());
@@ -5518,6 +5523,7 @@ void WebAPIRequestMapper::resetDeviceSettings(SWGSDRangel::SWGDeviceSettings& de
     deviceSettings.setFcdProPlusSettings(nullptr);
     deviceSettings.setFcdProSettings(nullptr);
     deviceSettings.setFileInputSettings(nullptr);
+    deviceSettings.setUdmaBufInputSettings(nullptr);
     deviceSettings.setFileOutputSettings(nullptr);
     deviceSettings.setHackRfInputSettings(nullptr);
     deviceSettings.setHackRfOutputSettings(nullptr);
@@ -5545,6 +5551,7 @@ void WebAPIRequestMapper::resetDeviceReport(SWGSDRangel::SWGDeviceReport& device
     deviceReport.setAirspyReport(nullptr);
     deviceReport.setAndroidSdrDriverInputReport(nullptr);
     deviceReport.setFileInputReport(nullptr);
+    deviceReport.setUdmaBufInputReport(nullptr);
     deviceReport.setLimeSdrInputReport(nullptr);
     deviceReport.setLimeSdrOutputReport(nullptr);
     deviceReport.setPerseusReport(nullptr);

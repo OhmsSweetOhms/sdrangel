@@ -1,6 +1,7 @@
 project(samplesource)
 
 add_subdirectory(fileinput)
+add_subdirectory(udmabufinput)
 add_subdirectory(testsource)
 add_subdirectory(localinput)
 

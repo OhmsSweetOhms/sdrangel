@@ -1,0 +1,26 @@
+UdmaBufInputSettings:
+  description: File-backed mmap input
+  properties:
+    fileName:
+      description: The name (path) of the mmap ring being read
+      type: string
+    sampleRate:
+      description: Complex sample rate in S/s from the mmap header
+      type: integer
+    centerFrequency:
+      description: Center frequency in Hz from the mmap header
+      type: integer
+      format: int64
+
+UdmaBufInputReport:
+  description: File-backed mmap input
+  properties:
+    fileName:
+      type: string
+    sampleRate:
+      description: Complex sample rate in S/s from the mmap header
+      type: integer
+    centerFrequency:
+      description: Center frequency in Hz from the mmap header
+      type: integer
+      format: int64

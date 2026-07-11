@@ -51,6 +51,7 @@
 #include "SWGSoapySDRReport.h"
 #include "SWGUSRPInputReport.h"
 #include "SWGUSRPOutputReport.h"
+#include "SWGUdmaBufInputReport.h"
 #include "SWGXtrxInputReport.h"
 #include "SWGXtrxMIMOReport.h"
 #include "SWGXtrxOutputReport.h"
@@ -100,6 +101,9 @@ public:
 
     SWGFileInputReport* getFileInputReport();
     void setFileInputReport(SWGFileInputReport* file_input_report);
+
+    SWGUdmaBufInputReport* getUdmaBufInputReport();
+    void setUdmaBufInputReport(SWGUdmaBufInputReport* udma_buf_input_report);
 
     SWGKiwiSDRReport* getKiwiSdrReport();
     void setKiwiSdrReport(SWGKiwiSDRReport* kiwi_sdr_report);
@@ -209,6 +213,9 @@ private:
 
     SWGFileInputReport* file_input_report;
     bool m_file_input_report_isSet;
+
+    SWGUdmaBufInputReport* udma_buf_input_report;
+    bool m_udma_buf_input_report_isSet;
 
     SWGKiwiSDRReport* kiwi_sdr_report;
     bool m_kiwi_sdr_report_isSet;

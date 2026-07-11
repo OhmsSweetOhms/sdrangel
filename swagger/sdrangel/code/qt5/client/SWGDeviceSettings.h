@@ -66,6 +66,7 @@
 #include "SWGTestSourceSettings.h"
 #include "SWGUSRPInputSettings.h"
 #include "SWGUSRPOutputSettings.h"
+#include "SWGUdmaBufInputSettings.h"
 #include "SWGXtrxInputSettings.h"
 #include "SWGXtrxMIMOSettings.h"
 #include "SWGXtrxOutputSettings.h"
@@ -139,6 +140,9 @@ public:
 
     SWGFileInputSettings* getFileInputSettings();
     void setFileInputSettings(SWGFileInputSettings* file_input_settings);
+
+    SWGUdmaBufInputSettings* getUdmaBufInputSettings();
+    void setUdmaBufInputSettings(SWGUdmaBufInputSettings* udma_buf_input_settings);
 
     SWGFileOutputSettings* getFileOutputSettings();
     void setFileOutputSettings(SWGFileOutputSettings* file_output_settings);
@@ -293,6 +297,9 @@ private:
 
     SWGFileInputSettings* file_input_settings;
     bool m_file_input_settings_isSet;
+
+    SWGUdmaBufInputSettings* udma_buf_input_settings;
+    bool m_udma_buf_input_settings_isSet;
 
     SWGFileOutputSettings* file_output_settings;
     bool m_file_output_settings_isSet;

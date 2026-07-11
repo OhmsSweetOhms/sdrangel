@@ -55,6 +55,7 @@
         <file>webapi/doc/swagger/include/FeatureSetPreset.yaml</file>
         <file>webapi/doc/swagger/include/FeatureSettings.yaml</file>
         <file>webapi/doc/swagger/include/FileInput.yaml</file>
+        <file>webapi/doc/swagger/include/UdmaBufInput.yaml</file>
         <file>webapi/doc/swagger/include/FileOutput.yaml</file>
         <file>webapi/doc/swagger/include/FileSink.yaml</file>
         <file>webapi/doc/swagger/include/FileSource.yaml</file>

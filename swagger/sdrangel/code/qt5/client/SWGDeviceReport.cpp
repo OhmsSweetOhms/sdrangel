@@ -46,6 +46,8 @@ SWGDeviceReport::SWGDeviceReport() {
     m_blade_rf2_mimo_report_isSet = false;
     file_input_report = nullptr;
     m_file_input_report_isSet = false;
+    udma_buf_input_report = nullptr;
+    m_udma_buf_input_report_isSet = false;
     kiwi_sdr_report = nullptr;
     m_kiwi_sdr_report_isSet = false;
     lime_sdr_input_report = nullptr;
@@ -124,6 +126,8 @@ SWGDeviceReport::init() {
     m_blade_rf2_mimo_report_isSet = false;
     file_input_report = new SWGFileInputReport();
     m_file_input_report_isSet = false;
+    udma_buf_input_report = new SWGUdmaBufInputReport();
+    m_udma_buf_input_report_isSet = false;
     kiwi_sdr_report = new SWGKiwiSDRReport();
     m_kiwi_sdr_report_isSet = false;
     lime_sdr_input_report = new SWGLimeSdrInputReport();
@@ -204,6 +208,9 @@ SWGDeviceReport::cleanup() {
     }
     if(file_input_report != nullptr) { 
         delete file_input_report;
+    }
+    if(udma_buf_input_report != nullptr) { 
+        delete udma_buf_input_report;
     }
     if(kiwi_sdr_report != nullptr) { 
         delete kiwi_sdr_report;
@@ -314,6 +321,8 @@ SWGDeviceReport::fromJsonObject(QJsonObject &pJson) {
     
     ::SWGSDRangel::setValue(&file_input_report, pJson["fileInputReport"], "SWGFileInputReport", "SWGFileInputReport");
     
+    ::SWGSDRangel::setValue(&udma_buf_input_report, pJson["udmaBufInputReport"], "SWGUdmaBufInputReport", "SWGUdmaBufInputReport");
+    
     ::SWGSDRangel::setValue(&kiwi_sdr_report, pJson["kiwiSDRReport"], "SWGKiwiSDRReport", "SWGKiwiSDRReport");
     
     ::SWGSDRangel::setValue(&lime_sdr_input_report, pJson["limeSdrInputReport"], "SWGLimeSdrInputReport", "SWGLimeSdrInputReport");
@@ -408,6 +417,9 @@ SWGDeviceReport::asJsonObject() {
     }
     if((file_input_report != nullptr) && (file_input_report->isSet())){
         toJsonValue(QString("fileInputReport"), file_input_report, obj, QString("SWGFileInputReport"));
+    }
+    if((udma_buf_input_report != nullptr) && (udma_buf_input_report->isSet())){
+        toJsonValue(QString("udmaBufInputReport"), udma_buf_input_report, obj, QString("SWGUdmaBufInputReport"));
     }
     if((kiwi_sdr_report != nullptr) && (kiwi_sdr_report->isSet())){
         toJsonValue(QString("kiwiSDRReport"), kiwi_sdr_report, obj, QString("SWGKiwiSDRReport"));
@@ -579,6 +591,16 @@ void
 SWGDeviceReport::setFileInputReport(SWGFileInputReport* file_input_report) {
     this->file_input_report = file_input_report;
     this->m_file_input_report_isSet = true;
+}
+
+SWGUdmaBufInputReport*
+SWGDeviceReport::getUdmaBufInputReport() {
+    return udma_buf_input_report;
+}
+void
+SWGDeviceReport::setUdmaBufInputReport(SWGUdmaBufInputReport* udma_buf_input_report) {
+    this->udma_buf_input_report = udma_buf_input_report;
+    this->m_udma_buf_input_report_isSet = true;
 }
 
 SWGKiwiSDRReport*
@@ -871,6 +893,9 @@ SWGDeviceReport::isSet(){
             isObjectUpdated = true; break;
         }
         if(file_input_report && file_input_report->isSet()){
+            isObjectUpdated = true; break;
+        }
+        if(udma_buf_input_report && udma_buf_input_report->isSet()){
             isObjectUpdated = true; break;
         }
         if(kiwi_sdr_report && kiwi_sdr_report->isSet()){

@@ -25,6 +25,8 @@ DeviceReport:
       $ref: "http://swgserver:8081/api/swagger/include/BladeRF2.yaml#/BladeRF2MIMOReport"
     fileInputReport:
       $ref: "http://swgserver:8081/api/swagger/include/FileInput.yaml#/FileInputReport"
+    udmaBufInputReport:
+      $ref: "http://swgserver:8081/api/swagger/include/UdmaBufInput.yaml#/UdmaBufInputReport"
     kiwiSDRReport:
       $ref: "http://swgserver:8081/api/swagger/include/KiwiSDR.yaml#/KiwiSDRReport"
     limeSdrInputReport:

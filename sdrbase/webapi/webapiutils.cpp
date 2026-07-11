@@ -119,6 +119,7 @@ const QMap<QString, QString> WebAPIUtils::m_deviceIdToSettingsKey = {
     {"sdrangel.samplesource.fcdproplus", "fcdProPlusSettings"},
     {"sdrangel.samplesource.fileinput", "fileInputSettings"},
     {"sdrangel.samplesource.filesource", "fileInputSettings"}, // remap
+    {"sdrangel.samplesource.udmabufinput", "udmaBufInputSettings"},
     {"sdrangel.samplesource.hackrf", "hackRFInputSettings"},
     {"sdrangel.samplesink.hackrf", "hackRFOutputSettings"},
     {"sdrangel.samplesource.hackrfoutput", "hackRFOutputSettings"}, // remap
@@ -241,6 +242,7 @@ const QMap<QString, QString> WebAPIUtils::m_sourceDeviceHwIdToSettingsKey = {
     {"FCDPro", "fcdProSettings"},
     {"FCDPro+", "fcdProPlusSettings"},
     {"FileInput", "fileInputSettings"},
+    {"UdmaBufInput", "udmaBufInputSettings"},
     {"HackRF", "hackRFInputSettings"},
     {"KiwiSDR", "kiwiSDRSettings"},
     {"LimeSDR", "limeSdrInputSettings"},
