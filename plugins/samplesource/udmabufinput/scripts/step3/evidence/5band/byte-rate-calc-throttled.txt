@@ -1,0 +1,33 @@
+plan-03 Step 3b -- throttled wire byte-rate (fpsPeriodMs=50), same host/producers as Step 3
+
+band          port   fftSize  mean fftTimeMs (n=19 intervals)  fps      wireBytes/frame  Mbps
+RF Wideband   8887   32768    66.26                            15.09    131118           15.83
+GPS L1        8888   4096     52.00                            19.23    16424            2.527
+GPS L2C       8889   4096     51.89                            19.27    16424            2.532
+GPS L5        8890   4096     50.11                            19.96    16424            2.622
+Iridium       8891   4096     52.00                            19.23    16424            2.527
+
+AGGREGATE throttled wire rate across all 5 ports: 26.04 Mbps (3.25 MB/s)
+
+Method: identical to Step 3's byte-rate-calc.txt -- per-band mean of the
+WSSpectrum-measured fftTimeMs header field (frame N's fftTimeMs = elapsed ms
+since the PREVIOUS FORWARDED frame, via QElapsedTimer::restart() in
+WSSpectrum::newSpectrum -- FORK PATCH gates which FFTs reach that call, so
+fftTimeMs now reports the throttled inter-frame period, not the raw FFT
+period), averaged over the 19 intervals in a 20-frame capture (frame 0
+dropped -- covers handshake/connect skew), times each band's captured wire
+frame size (RFC 6455 unmasked server->client frame: 36-byte spectrum header +
+4*fftSize payload bytes, + 4 bytes WS framing for payloads 126-65535 or +10
+bytes for payloads >65535, matching Step 3's convention exactly).
+
+wideband quantization note: 66.26 ms != the nominal 50 ms fpsPeriodMs target.
+The throttle gate can only release a frame on an FFT-COMPLETION boundary; on
+this CPU-limited host the wideband FFT completes every ~22 ms (Step 3
+finding), so the earliest boundary >= 50 ms after the last forwarded frame
+lands at ~3 FFT periods (~66 ms), not exactly 50 ms. The 4 slow bands
+(~2 ms FFT period, much finer than 50 ms) land within 0-2 ms of the nominal
+target (50.1-52.0 ms) because the quantization step is small relative to
+fpsPeriodMs. This is expected, correct gate behavior, not a bug -- see
+step3b-throttle-evidence.md for the full explanation and the same-process
+A/B control (fpsPeriodMs 50 -> 0 -> 50) that isolates the effect to the
+throttle, not host/producer variance.

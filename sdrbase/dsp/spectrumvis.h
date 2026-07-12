@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QRecursiveMutex>
+#include <QElapsedTimer>
 
 #include "dsp/basebandsamplesink.h"
 #include "dsp/fftengine.h"
@@ -204,6 +205,13 @@ private:
 	Real m_scalef;
 	GLSpectrumInterface* m_glSpectrum;
     WSSpectrum m_wsSpectrum;
+    // FORK PATCH (plan-03 Step 3b): honor fpsPeriodMs on the headless WSSpectrum
+    // path. Tracks wall-clock time since the last frame actually forwarded to
+    // m_wsSpectrum, independent of the GUI's own repaint-timer throttle.
+    // Invalid (QElapsedTimer::isValid() == false) until the first frame is
+    // forwarded, so the very first frame after startup/socket-(re)open is
+    // always sent immediately.
+    QElapsedTimer m_wsSpectrumTimer;
 	MovingAverage2D<double> m_movingAverage;
 	FixedAverage2D<double> m_fixedAverage;
 	Max2D<Real> m_max;

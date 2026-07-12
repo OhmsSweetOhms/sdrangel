@@ -33,13 +33,22 @@ Usage:
         --band "ring=/abs/path/l2c.udma,port=8889,label=GPS L2C" \\
         --band "ring=/abs/path/l5.udma,port=8890,label=GPS L5" \\
         --band "ring=/abs/path/iridium.udma,port=8891,label=Iridium" \\
-        [--api http://127.0.0.1:8091] [--ws-address 127.0.0.1]
+        [--api http://127.0.0.1:8091] [--ws-address 127.0.0.1] \\
+        [--fps-period-ms 50]
 
 Each --band is a comma-separated key=value list:
     ring=<path>       required -- absolute path to the mmap ring file
     port=<int>        required -- distinct wsSpectrumPort for this device set
     label=<text>       optional -- human label (default: the ring path)
     fft_size=<int>     optional -- per-band FFT size (default: 4096)
+
+plan-03 Step 3b: --fps-period-ms (default 50, i.e. 20 fps) is PATCHed into
+every device set's spectrum/settings as fpsPeriodMs. This throttles the
+headless WSSpectrum websocket push (sdrbase/dsp/spectrumvis.cpp FORK PATCH,
+plan-03 Step 3b) -- Step 3's finding was an unthrottled push at ~4
+bytes/sample, the same order as raw IQ. wsSpectrum still only opens the
+per-band spectrum port; no IQ path is touched. Pass 0 to restore the old
+unthrottled (one frame per completed FFT) behavior for comparison.
 """
 
 import argparse
@@ -138,6 +147,14 @@ def main():
         "per device set, in the order device sets should be created",
     )
     parser.add_argument("--ws-address", default="127.0.0.1")
+    parser.add_argument(
+        "--fps-period-ms",
+        type=int,
+        default=50,
+        help="spectrum/settings fpsPeriodMs PATCHed to every device set "
+        "(plan-03 Step 3b websocket throttle; default 50 = 20 fps; 0 = "
+        "unthrottled, one frame per completed FFT, the pre-Step-3b behavior)",
+    )
     args = parser.parse_args()
 
     bands = [parse_band_spec(s) for s in args.bands]
@@ -198,6 +215,7 @@ def main():
                 "linear": 0,
                 "wsSpectrumAddress": args.ws_address,
                 "wsSpectrumPort": band["port"],
+                "fpsPeriodMs": args.fps_period_ms,
             },
         )
         settings_readback = step(
@@ -233,6 +251,7 @@ def main():
                 "sourceSampleRate": source_rate,
                 "sourceCenterFrequency": source_cf,
                 "fftSize": settings_readback.get("fftSize"),
+                "fpsPeriodMs": settings_readback.get("fpsPeriodMs"),
                 "wsAddress": server_status.get("listeningAddress"),
                 "wsPort": server_status.get("listeningPort"),
                 "run": server_status.get("run"),
@@ -247,12 +266,14 @@ def main():
             and r["sourceSampleRate"]
             and r["sourceCenterFrequency"]
             and r["wsPort"] == r["requestedPort"]
+            and r["fpsPeriodMs"] == args.fps_period_ms
         )
         ok = ok and row_ok
         print(
             f"[{'OK' if row_ok else 'FAIL'}] device set {r['index']} \"{r['label']}\": "
             f"ring={r['ring']} sampleRate={r['sourceSampleRate']} "
             f"centerFrequency={r['sourceCenterFrequency']} fftSize={r['fftSize']} "
+            f"fpsPeriodMs={r['fpsPeriodMs']} (requested {args.fps_period_ms}) "
             f"ws={r['wsAddress']}:{r['wsPort']} (requested {r['requestedPort']}) run={r['run']}"
         )
     print("No RemoteSink / RemoteInput channel was created on any device set.")

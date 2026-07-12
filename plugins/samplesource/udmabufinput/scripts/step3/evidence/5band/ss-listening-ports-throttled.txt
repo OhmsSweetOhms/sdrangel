@@ -1,0 +1,6 @@
+LISTEN 0      50         127.0.0.1:8091       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=12))
+LISTEN 0      50         127.0.0.1:8888       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=23))
+LISTEN 0      50         127.0.0.1:8889       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=27))
+LISTEN 0      50         127.0.0.1:8890       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=31))
+LISTEN 0      50         127.0.0.1:8891       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=35))
+LISTEN 0      50         127.0.0.1:8887       0.0.0.0:*    users:(("sdrangelsrv",pid=1199720,fd=19))

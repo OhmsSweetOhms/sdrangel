@@ -622,17 +622,43 @@ void SpectrumVis::processFFT(const Complex* fftOut, bool reorder, bool positiveO
         }
 
         // web socket spectrum connections
+        //
+        // FORK PATCH (plan-03 Step 3b): honor fpsPeriodMs on the headless WSSpectrum
+        // path. Upstream, WSSpectrum::sendPayload() broadcasts unconditionally on
+        // every completed FFT (sdrbase/websockets/wsspectrum.cpp), so wire byte-rate
+        // is ~4 bytes/sample -- the same order as raw IQ. m_settings.m_fpsPeriodMs
+        // is already fully wired end-to-end via REST (GET/PATCH
+        // .../spectrum/settings, SpectrumSettings::updateFrom()) but had no consumer
+        // on this path -- only the GUI's repaint QTimer (sdrgui/gui/glspectrumview.cpp)
+        // read it, and headless sdrangelsrv never instantiates that GUI. Gate the
+        // forward here, BEFORE newSpectrum()/buildPayload()/sendBinaryMessage(), so a
+        // skipped frame costs nothing on the wire (not just a client-side drop).
+        // m_fpsPeriodMs <= 0 means "no limit" (matches the field's documented
+        // semantics in spectrumsettings.h); the first frame ever forwarded (timer
+        // not yet valid) always goes out immediately.
         if (m_wsSpectrum.socketOpened())
         {
-            m_wsSpectrum.newSpectrum(
-                m_powerSpectrum,
-                m_settings.m_fftSize,
-                m_centerFrequency,
-                m_sampleRate,
-                m_settings.m_linear,
-                m_settings.m_ssb,
-                m_settings.m_usb
-            );
+            bool forwardWsFrame = true;
+
+            if (m_settings.m_fpsPeriodMs > 0)
+            {
+                forwardWsFrame = !m_wsSpectrumTimer.isValid()
+                    || (m_wsSpectrumTimer.elapsed() >= m_settings.m_fpsPeriodMs);
+            }
+
+            if (forwardWsFrame)
+            {
+                m_wsSpectrumTimer.start();
+                m_wsSpectrum.newSpectrum(
+                    m_powerSpectrum,
+                    m_settings.m_fftSize,
+                    m_centerFrequency,
+                    m_sampleRate,
+                    m_settings.m_linear,
+                    m_settings.m_ssb,
+                    m_settings.m_usb
+                );
+            }
         }
     }
     else
@@ -852,6 +878,10 @@ void SpectrumVis::handleWSOpenClose(bool openClose)
 
     if (openClose) {
         m_wsSpectrum.openSocket();
+        // FORK PATCH (plan-03 Step 3b): force the next completed FFT to be
+        // forwarded immediately on (re)open, rather than waiting out whatever
+        // was left of the previous fpsPeriodMs window.
+        m_wsSpectrumTimer.invalidate();
     } else {
         m_wsSpectrum.closeSocket();
     }
