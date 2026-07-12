@@ -1,0 +1,4 @@
+sampleRate 2560000 centerFrequency 1575420000 minNbBlocks 136 maxNbRecovery 0 bufferRWBalance -36 remoteTimestamp 2026-07-11  21:16:24.246
+sampleRate 2560000 centerFrequency 1575420000 minNbBlocks 136 maxNbRecovery 0 bufferRWBalance 48 remoteTimestamp 2026-07-11  21:16:27.946
+sampleRate 2560000 centerFrequency 1575420000 minNbBlocks 136 maxNbRecovery 0 bufferRWBalance 32 remoteTimestamp 2026-07-11  21:16:29.663
+sampleRate 2560000 centerFrequency 1575420000 minNbBlocks 136 maxNbRecovery 0 bufferRWBalance 17 remoteTimestamp 2026-07-11  21:16:31.401

@@ -1,0 +1,9 @@
+source rate: 20,480,000 S/s   nbTxBytes=2   nbFECBlocks=8   1GbE ceiling=940 Mbps
+
+log2Decim  factor   rate (S/s)  on-wire (Mbps)   margin  fits?
+        0     1/1   20,480,000          701.80    1.34x  yes
+        1     1/2   10,240,000          350.90    2.68x  yes
+        2     1/4    5,120,000          175.45    5.36x  yes
+        3     1/8    2,560,000           87.73   10.72x  yes
+        4    1/16    1,280,000           43.86   21.43x  yes
+        5    1/32      640,000           21.93   42.86x  yes

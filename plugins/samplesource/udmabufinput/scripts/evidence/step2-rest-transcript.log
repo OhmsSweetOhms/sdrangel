@@ -1,0 +1,26 @@
+[INFO] cleared a prior device set (status 202)
+[INFO] cleared a prior device set (status 202)
+[OK] add device set 0 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 0: PUT http://127.0.0.1:8091/sdrangel/deviceset/0/device -> 202
+[OK] point UdmaBufInput at the ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/device/settings -> 200
+[OK] start device set 0 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/0/device/run -> 200
+[OK] read back UdmaBufInput report (source rate + CF): GET http://127.0.0.1:8091/sdrangel/deviceset/0/device/report -> 200
+    source sampleRate=20480000 centerFrequency=1575420000
+[OK] add RemoteSink channel on device set 0: POST http://127.0.0.1:8091/sdrangel/deviceset/0/channel -> 202
+[OK] configure RemoteSink decimation + FEC + destination: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/channel/0/settings -> 200
+[OK] read back RemoteSink settings: GET http://127.0.0.1:8091/sdrangel/deviceset/0/channel/0/settings -> 200
+    RemoteSink log2Decim=3 filterChainHash=13 dataAddress=127.0.0.1 dataPort=9999 nbFECBlocks=8
+[OK] add device set 1 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select RemoteInput on device set 1: PUT http://127.0.0.1:8091/sdrangel/deviceset/1/device -> 202
+[OK] point RemoteInput at the RemoteSink UDP + control API: PATCH http://127.0.0.1:8091/sdrangel/deviceset/1/device/settings -> 200
+[OK] start device set 1 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/1/device/run -> 200
+[OK] read back RemoteInput report (post-decimation rate + CF): GET http://127.0.0.1:8091/sdrangel/deviceset/1/device/report -> 200
+    RemoteInput reports sampleRate=2560000 centerFrequency=1575420000
+
+=== Step-2 verification summary ===
+source (UdmaBufInput) sampleRate : 20480000
+log2Decim applied by RemoteSink   : 3 (factor 8)
+expected decimated rate           : 2560000
+RemoteInput received sampleRate   : 2560000
+RemoteInput received centerFreq   : 1575420000 (source CF was 1575420000)
+PASS: Remote Sink meta carries the post-decimation sample rate.
