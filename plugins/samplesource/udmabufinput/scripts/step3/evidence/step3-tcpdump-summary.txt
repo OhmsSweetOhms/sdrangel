@@ -1,0 +1,41 @@
+=== spectrum-port-capture.pcap: tcp port 8887 only, 15s window ===
+reading from file plugins/samplesource/udmabufinput/scripts/step3/evidence/spectrum-port-capture.pcap, link-type EN10MB (Ethernet), snapshot length 262144
+22:19:35.118462 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [S], seq 1295114629, win 65495, options [mss 65495,sackOK,TS val 3452602720 ecr 0,nop,wscale 7], length 0
+22:19:35.118476 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [S.], seq 874900300, ack 1295114630, win 65483, options [mss 65495,sackOK,TS val 3452602720 ecr 3452602720,nop,wscale 7], length 0
+22:19:35.118486 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [.], ack 1, win 512, options [nop,nop,TS val 3452602720 ecr 3452602720], length 0
+22:19:35.118529 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [P.], seq 1:154, ack 1, win 512, options [nop,nop,TS val 3452602720 ecr 3452602720], length 153
+22:19:35.118535 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [.], ack 154, win 511, options [nop,nop,TS val 3452602720 ecr 3452602720], length 0
+22:19:35.118931 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [P.], seq 1:344, ack 154, win 512, options [nop,nop,TS val 3452602720 ecr 3452602720], length 343
+22:19:35.118949 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [.], ack 344, win 510, options [nop,nop,TS val 3452602720 ecr 3452602720], length 0
+22:19:35.120092 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [P.], seq 344:16768, ack 154, win 512, options [nop,nop,TS val 3452602721 ecr 3452602720], length 16424
+22:19:35.120101 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [.], ack 16768, win 837, options [nop,nop,TS val 3452602721 ecr 3452602721], length 0
+22:19:35.122580 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [P.], seq 16768:33192, ack 154, win 512, options [nop,nop,TS val 3452602724 ecr 3452602721], length 16424
+22:19:35.122589 IP 127.0.0.1.39638 > 127.0.0.1.8887: Flags [.], ack 33192, win 837, options [nop,nop,TS val 3452602724 ecr 3452602724], length 0
+... (50 packets total; every push from 127.0.0.1:8887 is length 16424 = 4-byte WS binary-frame header + 16420-byte spectrum payload; every client->server frame is a zero-length ACK)
+
+=== lo-broad-no-other-egress.pcap: unfiltered loopback capture, 8s window, no other REST/config calls in flight ===
+reading from file plugins/samplesource/udmabufinput/scripts/step3/evidence/lo-broad-no-other-egress.pcap, link-type EN10MB (Ethernet), snapshot length 262144
+22:21:07.758256 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [S], seq 302360749, win 65495, options [mss 65495,sackOK,TS val 3452695360 ecr 0,nop,wscale 7], length 0
+22:21:07.758269 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [S.], seq 3741077520, ack 302360750, win 65483, options [mss 65495,sackOK,TS val 3452695360 ecr 3452695360,nop,wscale 7], length 0
+22:21:07.758281 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 1, win 512, options [nop,nop,TS val 3452695360 ecr 3452695360], length 0
+22:21:07.758320 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [P.], seq 1:154, ack 1, win 512, options [nop,nop,TS val 3452695360 ecr 3452695360], length 153
+22:21:07.758325 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [.], ack 154, win 511, options [nop,nop,TS val 3452695360 ecr 3452695360], length 0
+22:21:07.758570 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 1:344, ack 154, win 512, options [nop,nop,TS val 3452695360 ecr 3452695360], length 343
+22:21:07.758582 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 344, win 510, options [nop,nop,TS val 3452695360 ecr 3452695360], length 0
+22:21:07.760154 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 344:16768, ack 154, win 512, options [nop,nop,TS val 3452695361 ecr 3452695360], length 16424
+22:21:07.760165 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 16768, win 837, options [nop,nop,TS val 3452695361 ecr 3452695361], length 0
+22:21:07.762886 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 16768:33192, ack 154, win 512, options [nop,nop,TS val 3452695364 ecr 3452695361], length 16424
+22:21:07.762897 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 33192, win 837, options [nop,nop,TS val 3452695364 ecr 3452695364], length 0
+22:21:07.765626 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 33192:49616, ack 154, win 512, options [nop,nop,TS val 3452695367 ecr 3452695364], length 16424
+22:21:07.765637 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 49616, win 837, options [nop,nop,TS val 3452695367 ecr 3452695367], length 0
+22:21:07.768139 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 49616:66040, ack 154, win 512, options [nop,nop,TS val 3452695369 ecr 3452695367], length 16424
+22:21:07.768149 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 66040, win 837, options [nop,nop,TS val 3452695369 ecr 3452695369], length 0
+22:21:07.770631 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [P.], seq 66040:82464, ack 154, win 512, options [nop,nop,TS val 3452695372 ecr 3452695369], length 16424
+22:21:07.770641 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 82464, win 837, options [nop,nop,TS val 3452695372 ecr 3452695372], length 0
+22:21:07.770692 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [F.], seq 154, ack 82464, win 837, options [nop,nop,TS val 3452695372 ecr 3452695372], length 0
+22:21:07.770723 IP 127.0.0.1.8887 > 127.0.0.1.46752: Flags [F.], seq 82464, ack 155, win 512, options [nop,nop,TS val 3452695372 ecr 3452695372], length 0
+22:21:07.770741 IP 127.0.0.1.46752 > 127.0.0.1.8887: Flags [.], ack 82465, win 837, options [nop,nop,TS val 3452695372 ecr 3452695372], length 0
+
+=== distinct ports seen in lo-broad-no-other-egress.pcap ===
+8887
+46752

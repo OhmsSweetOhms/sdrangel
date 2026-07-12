@@ -1,0 +1,27 @@
+One push packet from spectrum-port-capture.pcap, hex dump (tcpdump -XX), showing
+the wire bytes past Ethernet+IP+TCP headers are the WS binary-frame header
+(82 7e 40 24 = FIN+binary opcode, 16420-byte extended length) immediately
+followed by the 36-byte spectrum header and float32 power data -- not ci16 IQ.
+
+reading from file plugins/samplesource/udmabufinput/scripts/step3/evidence/spectrum-port-capture.pcap, link-type EN10MB (Ethernet), snapshot length 262144
+22:19:35.120092 IP 127.0.0.1.8887 > 127.0.0.1.39638: Flags [P.], seq 874900644:874917068, ack 1295114783, win 512, options [nop,nop,TS val 3452602721 ecr 3452602720], length 16424
+	0x0000:  0000 0000 0000 0000 0000 0000 0800 4500  ..............E.
+	0x0010:  405c 6203 4000 4006 9a96 7f00 0001 7f00  @\b.@.@.........
+	0x0020:  0001 22b7 9ad6 3425 eca4 4d31 e21f 8018  .."...4%..M1....
+	0x0030:  0200 3e51 0000 0101 080a cdca 8961 cdca  ..>Q.........a..
+	0x0040:  8960 827e 4024 6000 e75d 0000 0000 0200  .`.~@$`..]......
+	0x0050:  0000 0000 0000 d061 5654 9f01 0000 0010  .......aVT......
+	0x0060:  0000 0010 2700 0400 0000 3127 bfc3 5d7a  ....'.....1'..]z
+	0x0070:  33c3 f95c 3dc3 4997 35c3 5862 48c3 e144  3..\=.I.5.XbH..D
+	0x0080:  46c3 9dfe 3dc3 4e0d 3dc3 3127 bfc3 3ad1  F...=.N.=.1'..:.
+	0x0090:  38c3 92b0 44c3 1a81 47c3 85f2 4ac3 c4cb  8...D...G...J...
+
+Manual field parse of the bytes at payload offset 0x40 onward (after the 4-byte
+WS frame header 82 7e 40 24):
+  60 00 e7 5d 00 00 00 00  -> centerFrequency (uint64 LE) = 1575420000
+  02 00 00 00 00 00 00 00  -> fftTimeMs (int64 LE)        = 2
+  <8 bytes>                -> timestampMs (uint64 LE), a plausible unix-ms value
+  00 10 00 00              -> fftSize (int32 LE)          = 4096
+  00 10 27 00              -> bandwidth (int32 LE)        = 2560000
+  04 00 00 00              -> indicators (int32 LE)       = 0x4 (usb bit set, linear=0 => dB units)
+  31 27 bf c3 ...          -> first float32 power sample

@@ -1,0 +1,2 @@
+LISTEN 0      50         127.0.0.1:8091      0.0.0.0:*    users:(("sdrangelsrv",pid=1058934,fd=12))
+LISTEN 0      50         127.0.0.1:8887      0.0.0.0:*    users:(("sdrangelsrv",pid=1058934,fd=19))

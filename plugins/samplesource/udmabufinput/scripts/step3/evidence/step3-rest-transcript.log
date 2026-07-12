@@ -1,0 +1,22 @@
+[INFO] cleared a prior device set (status 202)
+[OK] add device set 0 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 0: PUT http://127.0.0.1:8091/sdrangel/deviceset/0/device -> 202
+[OK] point UdmaBufInput at the ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/device/settings -> 200
+[OK] start device set 0 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/0/device/run -> 200
+[OK] read back UdmaBufInput report (source rate + CF): GET http://127.0.0.1:8091/sdrangel/deviceset/0/device/report -> 200
+    source sampleRate=2560000 centerFrequency=1575420000
+[OK] configure spectrum FFT size/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/settings -> 200
+[OK] read back spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/settings -> 200
+    fftSize=4096 fftWindow=4 averagingMode=0 linear=0 wsSpectrumAddress=127.0.0.1 wsSpectrumPort=8887
+[OK] start spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server -> 200
+[OK] read back spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8887 clients=None
+
+=== Step-1 (plan-03) configuration summary ===
+UdmaBufInput ring         : <worktree>/codex-handoff/plan-03/temp/tone.udma
+source sampleRate         : 2560000
+source centerFrequency    : 1575420000
+spectrum fftSize          : 4096
+spectrum bandwidth (Hz)   : 2560000 (== device sample rate, carried per-frame in the wire header, not this settings call)
+spectrum ws address:port  : 127.0.0.1:8887
+No RemoteSink / RemoteInput channel was created on this device set.
