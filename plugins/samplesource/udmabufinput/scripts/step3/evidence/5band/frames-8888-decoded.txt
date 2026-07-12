@@ -1,0 +1,259 @@
+--- frame 0 (byte offset 0) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541904 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 1 (byte offset 16420) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541907 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 2 (byte offset 32840) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541909 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 3 (byte offset 49260) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541912 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 4 (byte offset 65680) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541915 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 5 (byte offset 82100) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541918 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 6 (byte offset 98520) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541921 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 7 (byte offset 114940) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 3 ms
+  timestampMs     : 1783865541924 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 8 (byte offset 131360) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541926 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 9 (byte offset 147780) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541929 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 10 (byte offset 164200) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 3 ms
+  timestampMs     : 1783865541932 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 11 (byte offset 180620) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541935 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 12 (byte offset 197040) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 3 ms
+  timestampMs     : 1783865541938 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 13 (byte offset 213460) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541941 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 14 (byte offset 229880) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541943 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 15 (byte offset 246300) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541946 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 16 (byte offset 262720) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541949 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 17 (byte offset 279140) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541952 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 18 (byte offset 295560) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541955 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH
+
+--- frame 19 (byte offset 311980) ---
+  centerFrequency : 1575420000 Hz
+  fftTimeMs       : 2 ms
+  timestampMs     : 1783865541958 ms (unix)
+  fftSize         : 4096
+  bandwidth       : 2560000 Hz
+  indicators      : 0x4 (linear=False ssb=False usb=True)
+  bin width       : 625.000 Hz
+  peak bin        : 2128 (offset +50000.0 Hz from CF)
+  peak value      : -6.02 dB (10*log10(|FFT|^2/N^2))
+  expected bin    : 2128 (offset +50000.0 Hz) -> MATCH
+  CF check        : MATCH

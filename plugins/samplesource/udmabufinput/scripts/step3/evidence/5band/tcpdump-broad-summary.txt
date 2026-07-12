@@ -1,0 +1,10 @@
+=== lo-broad-no-other-egress.pcap: all distinct (port,port) pairs seen ===
+    210 8891 42006
+    210 8890 56110
+    210 8889 39282
+    210 8888 34324
+    163 8887 53448
+     10 8091 48420
+
+total packets:
+1013

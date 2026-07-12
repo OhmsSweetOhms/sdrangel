@@ -1,0 +1,8 @@
+band          port   fftSize  fftTimeMs  fps      wireBytes/frame  measured Mbps  implied actual sample rate (S/s)
+RF Wideband   8887   32768    21         47.6     131118           49.95          1,560,381
+GPS L1        8888   4096     2          500.0    16424            65.70          2,048,000
+GPS L2C       8889   4096     2          500.0    16424            65.70          2,048,000
+GPS L5        8890   4096     2          500.0    16424            65.70          2,048,000
+Iridium       8891   4096     2          500.0    16424            65.70          2,048,000
+
+AGGREGATE measured wire rate across all 5 ports: 312.7 Mbps (39.09 MB/s)

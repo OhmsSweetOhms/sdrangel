@@ -1,0 +1,73 @@
+
+=== device set 0: RF Wideband (ws port 8887) ===
+[OK] add device set 0 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 0: PUT http://127.0.0.1:8091/sdrangel/deviceset/0/device -> 202
+[OK] point device set 0 UdmaBufInput at its ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/device/settings -> 200
+[OK] start device set 0 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/0/device/run -> 200
+[OK] read back device set 0 report: GET http://127.0.0.1:8091/sdrangel/deviceset/0/device/report -> 200
+    source sampleRate=20480000 centerFrequency=1575420000
+[OK] configure device set 0 spectrum FFT/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/settings -> 200
+[OK] read back device set 0 spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/settings -> 200
+[OK] start device set 0 spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server -> 200
+[OK] read back device set 0 spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8887 clients=None
+
+=== device set 1: GPS L1 (ws port 8888) ===
+[OK] add device set 1 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 1: PUT http://127.0.0.1:8091/sdrangel/deviceset/1/device -> 202
+[OK] point device set 1 UdmaBufInput at its ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/1/device/settings -> 200
+[OK] start device set 1 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/1/device/run -> 200
+[OK] read back device set 1 report: GET http://127.0.0.1:8091/sdrangel/deviceset/1/device/report -> 200
+    source sampleRate=2560000 centerFrequency=1575420000
+[OK] configure device set 1 spectrum FFT/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/1/spectrum/settings -> 200
+[OK] read back device set 1 spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/1/spectrum/settings -> 200
+[OK] start device set 1 spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/1/spectrum/server -> 200
+[OK] read back device set 1 spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/1/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8888 clients=None
+
+=== device set 2: GPS L2C (ws port 8889) ===
+[OK] add device set 2 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 2: PUT http://127.0.0.1:8091/sdrangel/deviceset/2/device -> 202
+[OK] point device set 2 UdmaBufInput at its ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/2/device/settings -> 200
+[OK] start device set 2 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/2/device/run -> 200
+[OK] read back device set 2 report: GET http://127.0.0.1:8091/sdrangel/deviceset/2/device/report -> 200
+    source sampleRate=2560000 centerFrequency=1227600000
+[OK] configure device set 2 spectrum FFT/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/2/spectrum/settings -> 200
+[OK] read back device set 2 spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/2/spectrum/settings -> 200
+[OK] start device set 2 spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/2/spectrum/server -> 200
+[OK] read back device set 2 spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/2/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8889 clients=None
+
+=== device set 3: GPS L5 (ws port 8890) ===
+[OK] add device set 3 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 3: PUT http://127.0.0.1:8091/sdrangel/deviceset/3/device -> 202
+[OK] point device set 3 UdmaBufInput at its ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/3/device/settings -> 200
+[OK] start device set 3 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/3/device/run -> 200
+[OK] read back device set 3 report: GET http://127.0.0.1:8091/sdrangel/deviceset/3/device/report -> 200
+    source sampleRate=2560000 centerFrequency=1176450000
+[OK] configure device set 3 spectrum FFT/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/3/spectrum/settings -> 200
+[OK] read back device set 3 spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/3/spectrum/settings -> 200
+[OK] start device set 3 spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/3/spectrum/server -> 200
+[OK] read back device set 3 spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/3/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8890 clients=None
+
+=== device set 4: Iridium (ws port 8891) ===
+[OK] add device set 4 (Rx): POST http://127.0.0.1:8091/sdrangel/deviceset?direction=0 -> 202
+[OK] select UdmaBufInput on device set 4: PUT http://127.0.0.1:8091/sdrangel/deviceset/4/device -> 202
+[OK] point device set 4 UdmaBufInput at its ring file: PATCH http://127.0.0.1:8091/sdrangel/deviceset/4/device/settings -> 200
+[OK] start device set 4 engine: POST http://127.0.0.1:8091/sdrangel/deviceset/4/device/run -> 200
+[OK] read back device set 4 report: GET http://127.0.0.1:8091/sdrangel/deviceset/4/device/report -> 200
+    source sampleRate=2560000 centerFrequency=1621250000
+[OK] configure device set 4 spectrum FFT/window/averaging + ws bind: PATCH http://127.0.0.1:8091/sdrangel/deviceset/4/spectrum/settings -> 200
+[OK] read back device set 4 spectrum settings: GET http://127.0.0.1:8091/sdrangel/deviceset/4/spectrum/settings -> 200
+[OK] start device set 4 spectrum websocket server: POST http://127.0.0.1:8091/sdrangel/deviceset/4/spectrum/server -> 200
+[OK] read back device set 4 spectrum server status: GET http://127.0.0.1:8091/sdrangel/deviceset/4/spectrum/server -> 200
+    run=1 listeningAddress=127.0.0.1 listeningPort=8891 clients=None
+
+=== Step-3 (plan-03) 5-band configuration summary ===
+[OK] device set 0 "RF Wideband": ring=codex-handoff/plan-03/temp/5band/rf_wb.udma sampleRate=20480000 centerFrequency=1575420000 fftSize=32768 ws=127.0.0.1:8887 (requested 8887) run=1
+[OK] device set 1 "GPS L1": ring=codex-handoff/plan-03/temp/5band/l1.udma sampleRate=2560000 centerFrequency=1575420000 fftSize=4096 ws=127.0.0.1:8888 (requested 8888) run=1
+[OK] device set 2 "GPS L2C": ring=codex-handoff/plan-03/temp/5band/l2c.udma sampleRate=2560000 centerFrequency=1227600000 fftSize=4096 ws=127.0.0.1:8889 (requested 8889) run=1
+[OK] device set 3 "GPS L5": ring=codex-handoff/plan-03/temp/5band/l5.udma sampleRate=2560000 centerFrequency=1176450000 fftSize=4096 ws=127.0.0.1:8890 (requested 8890) run=1
+[OK] device set 4 "Iridium": ring=codex-handoff/plan-03/temp/5band/iridium.udma sampleRate=2560000 centerFrequency=1621250000 fftSize=4096 ws=127.0.0.1:8891 (requested 8891) run=1
+No RemoteSink / RemoteInput channel was created on any device set.
