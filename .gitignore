@@ -53,3 +53,10 @@ wdsp/*.o
 wdsp/*.h
 wdsp/*.c
 wdsp/Makefile
+
+### Fork-local (udmabufinput-plugin branch) ###
+# Raw wire-capture scratch from plan-03 Steps 3/3b evidence scripts. The
+# decoded .txt dumps and evidence-*.md writeups are the committed proof;
+# these .bin captures are reproducible via step3_launch_5band.sh + the
+# per-port spectrum_ws_capture.py/spectrum_frame_decode.py invocations.
+plugins/samplesource/udmabufinput/scripts/step3/evidence/**/*.bin
