@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QSysInfo>
 #include <QResource>
+#include <QFileInfo>
 
 #include "dsp/dspengine.h"
 #include "dsp/dspdevicesourceengine.h"
@@ -58,8 +59,31 @@ MainServer::MainServer(qtwebapp::LoggerWithFile *logger, const MainParser& parse
     m_mainCore->m_settings.setAudioDeviceManager(m_dspEngine->getAudioDeviceManager());
     m_mainCore->m_masterTabIndex = -1;
 
+    // FFT_BENCH launch-state banner (plan-05 Step 4): report whether a wisdom
+    // file was requested and whether it is present on disk *before*
+    // DSPEngine::createFFTFactory() below preallocates the first FFTWEngine
+    // plans -- each of those preallocate() calls into FFTWEngine::configure()
+    // logs its own found/imported/matched/used outcome per plan
+    // (sdrbase/dsp/fftwengine.cpp), so this banner is the one-line early
+    // summary an operator sees before that per-plan detail.
+    const QString& fftwWisdomFileName = parser.getFFTWFWisdomFileName();
+    if (fftwWisdomFileName.isEmpty())
+    {
+        qInfo("MainServer::MainServer: no --fftwf-wisdom file configured -- FFT plans will use ESTIMATE fallback");
+    }
+    else if (QFileInfo::exists(fftwWisdomFileName))
+    {
+        qInfo("MainServer::MainServer: FFTW wisdom file found: '%s' (import/match outcome logged per plan below)",
+            qPrintable(fftwWisdomFileName));
+    }
+    else
+    {
+        qWarning("MainServer::MainServer: FFTW wisdom file NOT FOUND: '%s' -- ESTIMATE fallback (run FFT_BENCH to provision it)",
+            qPrintable(fftwWisdomFileName));
+    }
+
     qDebug() << "MainServer::MainServer: create FFT factory...";
-    m_dspEngine->createFFTFactory(parser.getFFTWFWisdomFileName());
+    m_dspEngine->createFFTFactory(fftwWisdomFileName);
 
     qDebug() << "MainServer::MainServer: load plugins...";
     m_mainCore->m_pluginManager = new PluginManager(this);
