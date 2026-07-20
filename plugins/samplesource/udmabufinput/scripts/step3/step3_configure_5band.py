@@ -118,6 +118,48 @@ def step(label, method, url, body=None, expect=(200, 202)):
     return payload
 
 
+def wait_for_deviceset_ready(base, expected_count, timeout_s=30.0, poll_interval_s=0.2):
+    """Polls GET /sdrangel/devicesets until devicesetcount >= expected_count.
+
+    plan-05 Step 5: POST /sdrangel/deviceset returns 202 once creation is
+    merely QUEUED -- DeviceSet -> SpectrumVis -> FFTFactory construction
+    still runs asynchronously on the server's event-loop thread afterward
+    (see findings-2026-07-20-fft-bench-root-cause.md). Sending the
+    device-selection PUT before that finishes attributes the queued
+    creation's latency to the PUT instead. This polls devicesetcount
+    (GET /sdrangel/devicesets, SWGDeviceSetList) so the PUT is only ever
+    sent once the server confirms the device set actually exists.
+
+    Unlike step()/rest() above, this catches (TimeoutError, OSError)
+    directly rather than relying on step()'s one-shot retry: a transient
+    connection hiccup during the poll window should just count as "not
+    ready yet" and be retried on the next iteration, not consume the
+    single retry step() reserves for its own large-FFT-allocation stall.
+    """
+    deadline = time.monotonic() + timeout_s
+    last_count = None
+    while time.monotonic() < deadline:
+        try:
+            status, payload = rest("GET", f"{base}/devicesets")
+        except (TimeoutError, OSError):
+            status, payload = None, {}
+        if status == 200:
+            last_count = payload.get("devicesetcount")
+            if last_count is not None and last_count >= expected_count:
+                print(f"[OK] device-set ready: devicesetcount={last_count} (>= expected {expected_count})")
+                return last_count
+        time.sleep(poll_interval_s)
+
+    # A creation timeout is reported as exactly that -- phase=deviceset-creation
+    # -- and NEVER as a device-selection/switch failure, even though the next
+    # step in this script would otherwise have been the device-selection PUT.
+    raise SystemExit(
+        f"step failed: DeviceSet CREATION timed out after {timeout_s}s waiting for "
+        f"devicesetcount >= {expected_count} (last observed devicesetcount={last_count}); "
+        f"phase=deviceset-creation -- NOT sending the device-selection PUT"
+    )
+
+
 def parse_band_spec(spec: str) -> dict:
     fields = {}
     for part in spec.split(","):
@@ -155,6 +197,9 @@ def main():
         "(plan-03 Step 3b websocket throttle; default 50 = 20 fps; 0 = "
         "unthrottled, one frame per completed FFT, the pre-Step-3b behavior)",
     )
+    parser.add_argument("--deviceset-ready-timeout", type=float, default=30.0,
+        help="bounded wait (seconds) per device set for devicesetcount to confirm "
+        "DeviceSet creation before PUT (plan-05 Step 5)")
     args = parser.parse_args()
 
     bands = [parse_band_spec(s) for s in args.bands]
@@ -175,7 +220,11 @@ def main():
     results = []
     for i, band in enumerate(bands):
         print(f"\n=== device set {i}: {band['label']} (ws port {band['port']}) ===")
+        status, payload = rest("GET", f"{base}/devicesets")
+        baseline_count = payload.get("devicesetcount", 0) if status == 200 else 0
+
         step(f"add device set {i} (Rx)", "POST", f"{base}/deviceset?direction=0")
+        wait_for_deviceset_ready(base, baseline_count + 1, timeout_s=args.deviceset_ready_timeout)
         step(
             f"select UdmaBufInput on device set {i}",
             "PUT",

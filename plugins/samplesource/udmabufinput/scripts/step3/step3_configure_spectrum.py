@@ -66,6 +66,13 @@ def rest(method, url, body=None):
             return exc.code, json.loads(raw)
         except json.JSONDecodeError:
             return exc.code, {"raw": raw.decode("utf-8", "replace")}
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        # Connection-level failure (refused, reset, DNS, timeout -- not an
+        # HTTP error status). Surfaced as status=None so a bounded poll loop
+        # (wait_for_deviceset_ready) can treat it as "not ready yet" and
+        # keep retrying within its own deadline, instead of an uncaught
+        # traceback interrupting the bounded wait.
+        return None, {"error": repr(exc)}
 
 
 def step(label, method, url, body=None, expect=(200, 202)):
@@ -79,6 +86,39 @@ def step(label, method, url, body=None, expect=(200, 202)):
     return payload
 
 
+def wait_for_deviceset_ready(base, expected_count, timeout_s=30.0, poll_interval_s=0.2):
+    """Polls GET /sdrangel/devicesets until devicesetcount >= expected_count.
+
+    plan-05 Step 5: POST /sdrangel/deviceset returns 202 once creation is
+    merely QUEUED -- DeviceSet -> SpectrumVis -> FFTFactory construction
+    still runs asynchronously on the server's event-loop thread afterward
+    (see findings-2026-07-20-fft-bench-root-cause.md). Sending the
+    device-selection PUT before that finishes attributes the queued
+    creation's latency to the PUT instead. This polls devicesetcount
+    (GET /sdrangel/devicesets, SWGDeviceSetList) so the PUT is only ever
+    sent once the server confirms the device set actually exists.
+    """
+    deadline = time.monotonic() + timeout_s
+    last_count = None
+    while time.monotonic() < deadline:
+        status, payload = rest("GET", f"{base}/devicesets")
+        if status == 200:
+            last_count = payload.get("devicesetcount")
+            if last_count is not None and last_count >= expected_count:
+                print(f"[OK] device-set ready: devicesetcount={last_count} (>= expected {expected_count})")
+                return last_count
+        time.sleep(poll_interval_s)
+
+    # A creation timeout is reported as exactly that -- phase=deviceset-creation
+    # -- and NEVER as a device-selection/switch failure, even though the next
+    # step in this script would otherwise have been the device-selection PUT.
+    raise SystemExit(
+        f"step failed: DeviceSet CREATION timed out after {timeout_s}s waiting for "
+        f"devicesetcount >= {expected_count} (last observed devicesetcount={last_count}); "
+        f"phase=deviceset-creation -- NOT sending the device-selection PUT"
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api", default="http://127.0.0.1:8091")
@@ -86,6 +126,8 @@ def main():
     parser.add_argument("--fft-size", type=int, default=4096)
     parser.add_argument("--ws-address", default="127.0.0.1")
     parser.add_argument("--ws-port", type=int, default=8887)
+    parser.add_argument("--deviceset-ready-timeout", type=float, default=30.0,
+        help="bounded wait (seconds) for devicesetcount to confirm DeviceSet creation before PUT (plan-05 Step 5)")
     args = parser.parse_args()
 
     base = args.api.rstrip("/") + "/sdrangel"
@@ -99,7 +141,11 @@ def main():
         time.sleep(0.2)
 
     # --- Device set 0: UdmaBufInput -----------------------------------------
+    status, payload = rest("GET", f"{base}/devicesets")
+    baseline_count = payload.get("devicesetcount", 0) if status == 200 else 0
+
     step("add device set 0 (Rx)", "POST", f"{base}/deviceset?direction=0")
+    wait_for_deviceset_ready(base, baseline_count + 1, timeout_s=args.deviceset_ready_timeout)
     step(
         "select UdmaBufInput on device set 0",
         "PUT",
