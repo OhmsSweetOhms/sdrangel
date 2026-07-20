@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include "dsp/samplesinkfifo.h"
 
@@ -11,6 +12,13 @@ namespace {
 constexpr char MmapMagic[8] = {'U', 'D', 'M', 'A', 'I', 'Q', '1', '\0'};
 constexpr quint32 MaxDrainSamples = 16384;
 constexpr unsigned long IdleSleepUsec = 200;
+// plan-06 Finding-1: low-rate SampleSinkFifo occupancy telemetry. Cheap
+// (fill()/size() are mutex-guarded O(1) reads) and rate-limited so it costs
+// nothing on the hot drain path; gives operators/diagnostics a live signal
+// to distinguish "bounded occupancy" (healthy) from "slow growth toward the
+// ring's fixed capacity" (the steady-state rate-deficit failure mode) without
+// needing to re-instrument for every future capacity investigation.
+constexpr qint64 FifoLogIntervalMs = 5000;
 
 FixReal expandCI16(qint16 value)
 {
@@ -139,12 +147,28 @@ void UdmaBufInputWorker::run()
     m_consumerSequence = producerSequence > header->sampleCapacity
         ? producerSequence - header->sampleCapacity : 0;
 
+    QElapsedTimer fifoLogTimer;
+    fifoLogTimer.start();
+
     while (isRunning())
     {
         const quint64 before = m_samplesCount.load(std::memory_order_relaxed);
         drainAvailable(header, ring);
         if (m_samplesCount.load(std::memory_order_relaxed) == before) {
             QThread::usleep(IdleSleepUsec);
+        }
+
+        if (fifoLogTimer.elapsed() >= FifoLogIntervalMs)
+        {
+            const unsigned int fifoSize = m_sampleFifo->size();
+            const unsigned int fifoFill = m_sampleFifo->fill();
+            const double fifoPct = fifoSize > 0 ? (100.0 * fifoFill / fifoSize) : 0.0;
+            qInfo().nospace() << "UdmaBufInputWorker::run: fifo occupancy "
+                << fifoFill << "/" << fifoSize << " (" << fifoPct << "%)"
+                << " samples=" << getSamplesCount()
+                << " fifoDropped=" << getFifoDroppedSamples()
+                << " upstreamDropped=" << getUpstreamDroppedSamples();
+            fifoLogTimer.restart();
         }
     }
 

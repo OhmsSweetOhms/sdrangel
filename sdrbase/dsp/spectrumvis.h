@@ -232,6 +232,7 @@ private:
 
     void performFFT(bool positiveOnly);
     void processFFT(const Complex* fftOut, bool reorder, bool positiveOnly, int fftSize);
+    bool spectrumFrameDue() const;
     void setRunning(bool running) { m_running = running; }
     void applySettings(const SpectrumSettings& settings, bool force = false);
   	bool handleMessage(const Message& message);

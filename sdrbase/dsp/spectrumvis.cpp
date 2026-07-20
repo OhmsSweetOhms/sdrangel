@@ -142,6 +142,18 @@ void SpectrumVis::feed(const ComplexVector::const_iterator& cbegin, const Comple
 		std::size_t todo = end - begin;
 		std::size_t samplesNeeded = m_settings.m_fftSize - m_fftBufferFill;
 
+        if (!spectrumFrameDue())
+        {
+            // Not due for a delivered frame -- discard up to the next window
+            // boundary without paying the windowing/FFT/power-spectrum cost.
+            // See spectrumFrameDue() for why this is safe.
+            std::size_t skip = std::min(todo, samplesNeeded);
+            begin += skip;
+            m_fftBufferFill = 0;
+            m_needMoreSamples = true;
+            continue;
+        }
+
 		if (todo >= samplesNeeded)
 		{
 			// fill up the buffer
@@ -192,6 +204,18 @@ void SpectrumVis::feed(const SampleVector::const_iterator& cbegin, const SampleV
 	{
 		std::size_t todo = end - begin;
 		std::size_t samplesNeeded = m_settings.m_fftSize - m_fftBufferFill;
+
+        if (!spectrumFrameDue())
+        {
+            // Not due for a delivered frame -- discard up to the next window
+            // boundary without paying the windowing/FFT/power-spectrum cost.
+            // See spectrumFrameDue() for why this is safe.
+            std::size_t skip = std::min(todo, samplesNeeded);
+            begin += skip;
+            m_fftBufferFill = 0;
+            m_needMoreSamples = true;
+            continue;
+        }
 
 		if (todo >= samplesNeeded)
 		{
@@ -278,6 +302,37 @@ void SpectrumVis::mathDB(std::vector<Real> &spectrum)
             spectrum[i] = abs(spectrum[i] - m_mathMemory[i]);
         }
     }
+}
+
+// FORK PATCH (plan-06 Finding-1 fix): gate the FFT *compute* itself, not just
+// the WS forward, by the same fpsPeriodMs cadence already honored below in
+// processFFT(). GUI mode (m_glSpectrum set) always wants the freshest frame --
+// computing every window and letting the GUI's own repaint timer decide what
+// to display is existing, unchanged behavior (see the plan-03 Step 3b FORK
+// PATCH comment in processFFT() for that history). Headless mode
+// (m_glSpectrum null -- the sdrangelsrv case) has no GUI repaint timer to
+// fall back on, so before this patch every incoming fftSize-sized window was
+// windowed, transformed, and power-spectrum reduced synchronously on the
+// DSPDeviceSourceEngine thread that also drains SampleSinkFifo -- e.g. at
+// fftSize=1024 / 20.48 Msps that is 20000 FFTs/sec computed to serve a
+// 20 fps (fpsPeriodMs=50) WS client, a 1000x compute/deliver mismatch. Under
+// sustained dual-device load (two such device sets sharing four A53 cores)
+// that synchronous overwork was enough to fall a fraction of a percent
+// behind the average input rate, slowly filling the fixed-size FIFO
+// (SampleSinkFifo::getSizePolicy(): 0.64s of samples) over roughly a minute
+// until it entered sustained overflow. Skipping compute for windows that
+// would be discarded anyway (nobody but a not-yet-due WS client would see
+// them) removes the wasted work at its source instead of just buffering
+// around it.
+bool SpectrumVis::spectrumFrameDue() const
+{
+    if (m_glSpectrum) {
+        return true;
+    }
+
+    return (m_settings.m_fpsPeriodMs <= 0)
+        || !m_wsSpectrumTimer.isValid()
+        || (m_wsSpectrumTimer.elapsed() >= m_settings.m_fpsPeriodMs);
 }
 
 void SpectrumVis::performFFT(bool positiveOnly)
