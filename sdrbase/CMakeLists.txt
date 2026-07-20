@@ -696,6 +696,12 @@ target_compile_definitions(sdrbase PRIVATE
 
 install(TARGETS sdrbase DESTINATION ${INSTALL_LIB_DIR})
 
+# FFT_BENCH shared-engine regression (plan-05 Step 1): only meaningful when
+# the FFTW engine this hop changed is actually built.
+if(FFTW3F_FOUND AND BUILD_TESTS)
+    add_subdirectory(dsp/tests)
+endif()
+
 if(WIN32 AND Qt6_FOUND)
     # Run deployqt for Core5Compat
     include(DeployQt)

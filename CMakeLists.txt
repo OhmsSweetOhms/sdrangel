@@ -30,6 +30,7 @@ option(SANITIZE_MEMORY "Activate detection of leaked memory (LeakSanitizer)" OFF
 option(RX_SAMPLE_24BIT "Internal 24 bit Rx DSP" ON)
 option(BUILD_SERVER "Build Server" ON)
 option(BUILD_GUI "Build GUI" ON)
+option(BUILD_TESTS "Build unit and regression tests" ON)
 option(BUILD_BENCH "Build benchmark" ON)
 option(HIDE_CONSOLE "Hide console when running GUI on Windows" ON)
 option(BUNDLE "Enable distribution bundle" OFF)
@@ -1061,6 +1062,10 @@ endif()
 if(ENABLE_FUNCUBE AND LIBUSB_FOUND AND HIDAPI_FOUND)
     add_subdirectory(fcdlib)
     add_subdirectory(fcdhid)
+endif()
+
+if (BUILD_TESTS)
+    enable_testing()
 endif()
 
 # base libraries
