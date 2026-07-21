@@ -12,6 +12,13 @@ namespace {
 constexpr char MmapMagic[8] = {'U', 'D', 'M', 'A', 'I', 'Q', '1', '\0'};
 constexpr quint32 MaxDrainSamples = 16384;
 constexpr unsigned long IdleSleepUsec = 200;
+// q-01 v2 seqlock read bound (design-ring-fanout-spec.md Sec 5 v2 item 4): a
+// live publish window is ns-wide, so a clean even-seq read lands in the first
+// few spins; this cap only matters when the writer was SIGKILLed between the
+// odd and even seq bumps (seq stranded odd), in which case loadWriteSequence
+// gives up and the caller routes to the existing "producer gone" idle path
+// instead of hard-spinning the engine thread.
+constexpr unsigned SeqlockMaxSpins = 1024;
 // plan-06 Finding-1: low-rate SampleSinkFifo occupancy telemetry. Cheap
 // (fill()/size() are mutex-guarded O(1) reads) and rate-limited so it costs
 // nothing on the hot drain path; gives operators/diagnostics a live signal
@@ -102,7 +109,16 @@ bool UdmaBufInputWorker::validateHeader(const MmapHeader& header, quint64 fileSi
         return false;
     }
     if (header.version != HeaderVersion || header.headerBytes != HeaderBytes) {
-        error = QString("unsupported mmap header version/layout %1/%2").arg(header.version).arg(header.headerBytes);
+        error = QString("unsupported mmap header version/layout %1/%2 (need v%3, a v1 bundle is stale)")
+            .arg(header.version).arg(header.headerBytes).arg(HeaderVersion);
+        return false;
+    }
+    // q-01 v2 (spec Sec 5 v2 item 2): `version==2` is stored LAST at init and
+    // an even `seq` means no publish is in flight -- both are required before
+    // first use so a reader can never latch a half-initialized header.
+    if ((header.seq & 1u) != 0u) {
+        error = QString("mmap header seqlock word is odd (%1): producer mid-publish or not yet initialized")
+            .arg(header.seq);
         return false;
     }
     if (header.sampleRate == 0 || header.sampleSizeBits != 16 || header.sampleCapacity == 0) {
@@ -120,9 +136,35 @@ bool UdmaBufInputWorker::validateHeader(const MmapHeader& header, quint64 fileSi
     return true;
 }
 
-quint64 UdmaBufInputWorker::loadWriteSequence(const MmapHeader *header)
+bool UdmaBufInputWorker::loadWriteSequence(const MmapHeader *header, quint64& value)
 {
-    return __atomic_load_n(&header->writeSequence, __ATOMIC_ACQUIRE);
+    // q-01 v2 bounded seqlock read (design-ring-fanout-spec.md Sec 5 v2 item
+    // 4): the ARMHF writer publishes writeSequence as two 32-bit halves guarded
+    // by `seq` (odd = publish in flight). Read seq (s0), acquire-fence, read
+    // lo/hi through volatile pointers, acquire-fence, read seq (s1); a read is
+    // clean iff s0 is even and s0==s1. This is an inline mirror of
+    // capture_ring_read64() -- the fork must NOT include capture_ring.h or any
+    // socks header (contract confinement, spec Sec 1). Bounded, unlike
+    // capture_ring_read64()'s unbounded spin: on exhaustion (writer SIGKILLed
+    // mid-publish, seq stranded odd) return false so the caller idles; the
+    // engine's own while(isRunning()) loop supplies the retry.
+    const volatile quint32 *seqp = reinterpret_cast<const volatile quint32 *>(&header->seq);
+    const volatile quint32 *lop  = reinterpret_cast<const volatile quint32 *>(&header->writeSequenceLo);
+    const volatile quint32 *hip  = reinterpret_cast<const volatile quint32 *>(&header->writeSequenceHi);
+
+    for (unsigned spin = 0; spin < SeqlockMaxSpins; ++spin) {
+        const quint32 s0 = *seqp;
+        std::atomic_thread_fence(std::memory_order_acquire);
+        const quint32 lo = *lop;
+        const quint32 hi = *hip;
+        std::atomic_thread_fence(std::memory_order_acquire);
+        const quint32 s1 = *seqp;
+        if ((s0 & 1u) == 0u && s0 == s1) {
+            value = (static_cast<quint64>(hi) << 32) | static_cast<quint64>(lo);
+            return true;
+        }
+    }
+    return false;
 }
 
 void UdmaBufInputWorker::run()
@@ -143,7 +185,10 @@ void UdmaBufInputWorker::run()
 
     const auto *header = reinterpret_cast<const MmapHeader *>(mapping);
     const auto *ring = reinterpret_cast<const CI16Sample *>(mapping + HeaderBytes);
-    const quint64 producerSequence = loadWriteSequence(header);
+    quint64 producerSequence = 0;
+    // A clean read is guaranteed here (validateHeader already required even
+    // seq); if the writer is mid-publish anyway, start from 0 and catch up.
+    (void)loadWriteSequence(header, producerSequence);
     m_consumerSequence = producerSequence > header->sampleCapacity
         ? producerSequence - header->sampleCapacity : 0;
 
@@ -181,7 +226,14 @@ void UdmaBufInputWorker::run()
 
 void UdmaBufInputWorker::drainAvailable(const MmapHeader *header, const CI16Sample *ring)
 {
-    const quint64 producerSequence = loadWriteSequence(header);
+    quint64 producerSequence = 0;
+    // q-01 v2: a bounded seqlock read failure means the writer is mid-publish
+    // (or was killed with seq stranded odd). Skip this drain pass; run()'s
+    // no-progress branch then idles IdleSleepUsec and the next iteration
+    // retries -- the "producer gone" degrade path (spec Sec 5 v2 item 4).
+    if (!loadWriteSequence(header, producerSequence)) {
+        return;
+    }
     quint64 available = producerSequence - m_consumerSequence;
 
     if (available > header->sampleCapacity)

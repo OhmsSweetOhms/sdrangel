@@ -17,24 +17,33 @@ class UdmaBufInputWorker : public QThread
     Q_OBJECT
 
 public:
-    static constexpr quint32 HeaderVersion = 1;
+    static constexpr quint32 HeaderVersion = 2;   // q-01: split-word seqlock publish (v2)
     static constexpr quint32 HeaderBytes = 64;
     static constexpr quint32 PatternTone = 1;
     static constexpr quint32 PatternRamp = 2;
 
+    // v2 header (design-ring-fanout-spec.md Sec 5 v2 amendment, the q-01
+    // contract change): the two live u64 fields are published by the ARMHF
+    // writer as naturally-aligned 32-bit lo/hi pairs guarded by the seqlock
+    // word `seq` (former `reserved` @52, odd = publish in flight). Every shared
+    // field is a single-copy-atomic 32-bit word on both ABIs -- no 8-byte
+    // store the writer's process-private libatomic lock could tear. Offsets are
+    // unchanged from v1; the 64-byte size is static-asserted below.
     struct MmapHeader
     {
-        char magic[8];
-        quint32 version;
-        quint32 headerBytes;
-        quint32 sampleRate;
-        quint32 sampleSizeBits;
-        quint64 centerFrequency;
-        quint64 sampleCapacity;
-        quint64 writeSequence;
-        quint32 pattern;
-        quint32 reserved;
-        quint64 producerDrops;
+        char magic[8];              // 0
+        quint32 version;            // 8  = 2, written LAST at init
+        quint32 headerBytes;        // 12
+        quint32 sampleRate;         // 16
+        quint32 sampleSizeBits;     // 20
+        quint64 centerFrequency;    // 24
+        quint64 sampleCapacity;     // 32
+        quint32 writeSequenceLo;    // 40
+        quint32 writeSequenceHi;    // 44
+        quint32 pattern;            // 48
+        quint32 seq;                // 52 seqlock word (odd = publish in flight)
+        quint32 producerDropsLo;    // 56
+        quint32 producerDropsHi;    // 60
     };
 
     struct CI16Sample
@@ -61,7 +70,7 @@ protected:
     void run() override;
 
 private:
-    static quint64 loadWriteSequence(const MmapHeader *header);
+    static bool loadWriteSequence(const MmapHeader *header, quint64& value);
     void drainAvailable(const MmapHeader *header, const CI16Sample *ring);
     void convertAndWrite(const CI16Sample *samples, quint32 count, quint64 firstSequence, quint32 pattern);
 
