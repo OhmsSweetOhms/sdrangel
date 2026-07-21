@@ -71,6 +71,7 @@ protected:
 
 private:
     static bool loadWriteSequence(const MmapHeader *header, quint64& value);
+    static quint32 loadVersion(const MmapHeader *header);
     void drainAvailable(const MmapHeader *header, const CI16Sample *ring);
     void convertAndWrite(const CI16Sample *samples, quint32 count, quint64 firstSequence, quint32 pattern);
 

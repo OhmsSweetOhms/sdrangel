@@ -167,6 +167,15 @@ bool UdmaBufInputWorker::loadWriteSequence(const MmapHeader *header, quint64& va
     return false;
 }
 
+quint32 UdmaBufInputWorker::loadVersion(const MmapHeader *header)
+{
+    // A1 (plan-10): the producer re-inits its header IN PLACE on restart (no
+    // O_TRUNC), storing version=0 first and version=HeaderVersion last. Read
+    // version through a volatile pointer so the poll in run() re-samples the
+    // mapping every iteration instead of the compiler hoisting a stale load.
+    return *reinterpret_cast<const volatile quint32 *>(&header->version);
+}
+
 void UdmaBufInputWorker::run()
 {
     QFile file(m_fileName);
@@ -191,12 +200,48 @@ void UdmaBufInputWorker::run()
     (void)loadWriteSequence(header, producerSequence);
     m_consumerSequence = producerSequence > header->sampleCapacity
         ? producerSequence - header->sampleCapacity : 0;
+    // A1 (plan-10): the producer re-inits the header in place on restart (no
+    // O_TRUNC); `version` transitions HeaderVersion -> 0 (invalidate) ->
+    // HeaderVersion (re-init complete). Track it so run() can re-validate and
+    // resync when a restart is observed via the version dip.
+    quint32 lastVersion = loadVersion(header);
 
     QElapsedTimer fifoLogTimer;
     fifoLogTimer.start();
 
     while (isRunning())
     {
+        // A1 (plan-10): re-validate on any version change. While version !=
+        // HeaderVersion the producer is mid-reinit -- idle until it settles.
+        // Once it re-reads HeaderVersion, re-run validateHeader (rate/capacity/
+        // seqlock/size may have changed with a fresh bundle; a bad one fails
+        // loudly and stops the worker rather than reading garbage) and resync
+        // m_consumerSequence to the fresh producer's published sequence.
+        const quint32 currentVersion = loadVersion(header);
+        if (currentVersion != lastVersion)
+        {
+            if (currentVersion != HeaderVersion)
+            {
+                QThread::usleep(IdleSleepUsec);
+                continue;
+            }
+            QString error;
+            if (!validateHeader(*header, file.size(), error))
+            {
+                qCritical() << "UdmaBufInputWorker::run: header re-validate failed after producer restart:" << error;
+                m_running.store(false, std::memory_order_release);
+                break;
+            }
+            quint64 restartSequence = 0;
+            (void)loadWriteSequence(header, restartSequence);
+            m_consumerSequence = restartSequence > header->sampleCapacity
+                ? restartSequence - header->sampleCapacity : 0;
+            lastVersion = currentVersion;
+            qInfo() << "UdmaBufInputWorker::run: producer restart re-validated, resync consumerSequence"
+                    << m_consumerSequence;
+            continue;
+        }
+
         const quint64 before = m_samplesCount.load(std::memory_order_relaxed);
         drainAvailable(header, ring);
         if (m_samplesCount.load(std::memory_order_relaxed) == before) {
@@ -234,6 +279,22 @@ void UdmaBufInputWorker::drainAvailable(const MmapHeader *header, const CI16Samp
     if (!loadWriteSequence(header, producerSequence)) {
         return;
     }
+
+    // A1 fix (plan-10): a producer restart republishes writeSequence from 0, so
+    // producerSequence can regress BELOW our accumulated m_consumerSequence.
+    // Computed naively, producerSequence - m_consumerSequence underflows to a
+    // near-2^64 "available" -- mis-accounted as billions of upstream drops and a
+    // forced full-ring re-drain. Detect the regression and resync
+    // m_consumerSequence with the same formula startup uses (leave the fresh
+    // producer at most one ring behind), reporting no spurious drop; the next
+    // pass then drains normally. (The version-change re-validate in run() is the
+    // companion guard for the case where we also observe the version dip.)
+    if (producerSequence < m_consumerSequence) {
+        m_consumerSequence = producerSequence > header->sampleCapacity
+            ? producerSequence - header->sampleCapacity : 0;
+        return;
+    }
+
     quint64 available = producerSequence - m_consumerSequence;
 
     if (available > header->sampleCapacity)
