@@ -262,6 +262,13 @@ def main():
                 "fftWindow": FFT_WINDOW_HANNING,
                 "averagingMode": AVERAGING_MODE_NONE,
                 "linear": 0,
+                # Finding B (plan-10): wsSpectrum=1 is the GLSpectrum WS-push
+                # ENABLE flag. Without it the WS server binds and completes the
+                # client handshake but pushes ZERO frames (plan-07 attempt-3's
+                # handshake-OK-then-timeout episode, previously worked around at
+                # runtime by enable_wsspectrum.py). Set it here so frames flow
+                # with no runtime PATCH.
+                "wsSpectrum": 1,
                 "wsSpectrumAddress": args.ws_address,
                 "wsSpectrumPort": band["port"],
                 "fpsPeriodMs": args.fps_period_ms,
@@ -301,6 +308,7 @@ def main():
                 "sourceCenterFrequency": source_cf,
                 "fftSize": settings_readback.get("fftSize"),
                 "fpsPeriodMs": settings_readback.get("fpsPeriodMs"),
+                "wsSpectrum": settings_readback.get("wsSpectrum"),
                 "wsAddress": server_status.get("listeningAddress"),
                 "wsPort": server_status.get("listeningPort"),
                 "run": server_status.get("run"),
@@ -316,6 +324,7 @@ def main():
             and r["sourceCenterFrequency"]
             and r["wsPort"] == r["requestedPort"]
             and r["fpsPeriodMs"] == args.fps_period_ms
+            and r["wsSpectrum"] == 1  # Finding B: push-enable must read back set
         )
         ok = ok and row_ok
         print(
@@ -323,6 +332,7 @@ def main():
             f"ring={r['ring']} sampleRate={r['sourceSampleRate']} "
             f"centerFrequency={r['sourceCenterFrequency']} fftSize={r['fftSize']} "
             f"fpsPeriodMs={r['fpsPeriodMs']} (requested {args.fps_period_ms}) "
+            f"wsSpectrum={r['wsSpectrum']} "
             f"ws={r['wsAddress']}:{r['wsPort']} (requested {r['requestedPort']}) run={r['run']}"
         )
     print("No RemoteSink / RemoteInput channel was created on any device set.")
