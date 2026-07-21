@@ -19,6 +19,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.          //
 ///////////////////////////////////////////////////////////////////////////////////
 
+#include <memory>
+
 #include <QDebug>
 #include <QSysInfo>
 #include <QResource>
@@ -521,8 +523,19 @@ void MainServer::changeSampleSource(int deviceSetIndex, int selectedDeviceIndex)
         DeviceSampleSource *source = deviceSet->m_deviceAPI->getPluginInterface()->createSampleSourcePluginInstance(
                 deviceSet->m_deviceAPI->getSamplingDeviceId(), deviceSet->m_deviceAPI);
         deviceSet->m_deviceAPI->setSampleSource(source);
-        // wait for sample source to be set, before loading settings
-        auto connection = new QMetaObject::Connection();
+        // wait for sample source to be set, before loading settings.
+        // A2 fix (plan-10): the connection handle is shared_ptr-owned, not a raw
+        // `new`/`delete` inside a self-disconnecting one-shot lambda. sampleSet
+        // can be emitted more than once (queued cross-thread from the DSP engine)
+        // during rapid device-set churn under load; the old pattern deleted the
+        // heap Connection on the first invocation, so a second queued invocation
+        // ran QObject::disconnect(*connection) on freed memory -> use-after-free
+        // SIGSEGV on the main/event-loop thread (plan-07 Finding A, root-caused
+        // via the plan-10 x86 gdb repro at sdrsrv/mainserver.cpp:534). `[=]`
+        // copies the shared_ptr into every queued invocation, so the handle
+        // outlives all of them; a second disconnect() on an already-broken
+        // handle is a safe no-op, and no delete means no double-free.
+        auto connection = std::make_shared<QMetaObject::Connection>();
         *connection = connect(
             deviceSet->m_deviceSourceEngine,
             &DSPDeviceSourceEngine::sampleSet,
@@ -532,7 +545,6 @@ void MainServer::changeSampleSource(int deviceSetIndex, int selectedDeviceIndex)
                 // Notify
                 emit m_mainCore->deviceChanged(deviceSetIndex);
                 QObject::disconnect(*connection);
-                delete connection;
             }
         );
     }
@@ -601,8 +613,11 @@ void MainServer::changeSampleSink(int deviceSetIndex, int selectedDeviceIndex)
         DeviceSampleSink *sink = deviceSet->m_deviceAPI->getPluginInterface()->createSampleSinkPluginInstance(
                 deviceSet->m_deviceAPI->getSamplingDeviceId(), deviceSet->m_deviceAPI);
         deviceSet->m_deviceAPI->setSampleSink(sink);
-        // wait for sample source to be set, before loading settings
-        auto connection = new QMetaObject::Connection();
+        // wait for sample sink to be set, before loading settings.
+        // A2 fix (plan-10): shared_ptr-owned one-shot connection -- see the
+        // matching note in changeSampleSource(). Same use-after-free class:
+        // multiple queued sampleSet emissions vs a raw new/delete Connection.
+        auto connection = std::make_shared<QMetaObject::Connection>();
         *connection = connect(
             deviceSet->m_deviceSinkEngine,
             &DSPDeviceSinkEngine::sampleSet,
@@ -612,7 +627,6 @@ void MainServer::changeSampleSink(int deviceSetIndex, int selectedDeviceIndex)
                 // Notify
                 emit m_mainCore->deviceChanged(deviceSetIndex);
                 QObject::disconnect(*connection);
-                delete connection;
             }
         );
     }
@@ -667,8 +681,11 @@ void MainServer::changeSampleMIMO(int deviceSetIndex, int selectedDeviceIndex)
         DeviceSampleMIMO *mimo = deviceSet->m_deviceAPI->getPluginInterface()->createSampleMIMOPluginInstance(
                 deviceSet->m_deviceAPI->getSamplingDeviceId(), deviceSet->m_deviceAPI);
         deviceSet->m_deviceAPI->setSampleMIMO(mimo);
-        // wait for sample source to be set, before loading settings
-        auto connection = new QMetaObject::Connection();
+        // wait for sample MIMO to be set, before loading settings.
+        // A2 fix (plan-10): shared_ptr-owned one-shot connection -- see the
+        // matching note in changeSampleSource(). Same use-after-free class:
+        // multiple queued sampleSet emissions vs a raw new/delete Connection.
+        auto connection = std::make_shared<QMetaObject::Connection>();
         *connection = connect(
             deviceSet->m_deviceMIMOEngine,
             &DSPDeviceMIMOEngine::sampleSet,
@@ -678,7 +695,6 @@ void MainServer::changeSampleMIMO(int deviceSetIndex, int selectedDeviceIndex)
                 // Notify
                 emit m_mainCore->deviceChanged(deviceSetIndex);
                 QObject::disconnect(*connection);
-                delete connection;
             }
         );
     }
